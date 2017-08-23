@@ -1,3 +1,5 @@
+#### 16,777,216개 정수들의 평균을 구하는 프로그램 작성하기 실습
+
 #### 파일 설명
 
 > atomic.stderr, stdout	- atomic operation을 했을 때 평균을 구하는 시간이 얼마나 걸리는지 보여준다. vs Sequential Code <br />
