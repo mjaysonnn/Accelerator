@@ -70,7 +70,7 @@ int main() {
     //                cl_device_id *   /* devices */, 
     //                cl_uint *        /* num_devices */)
 
-    context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);   // 컨텍스트 만들기 , 커널이 실행되는 환경을 만들어준다. 다른 객체들을 관리하기 위한 최상위 객체, 컨텍스트 단위로 커맨드 간 동기화 및 메모리 관리를 수     
+    context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);   // 컨텍스트(객) 만들기 , 커널이 실행되는 환경을 만들어준다. 다른 객체들을 관리하기 위한 최상위 객체, 컨텍스트 단위로 커맨드 간 동기화 및 메모리 관리를 수     
                                                                      // 디바이스 1개를 사용하는 COntext 만들기
     CHECK_ERROR(err);
 
@@ -162,16 +162,16 @@ int main() {
                                                         // 프로그램이 빌드 된 다음 만들어야한다.(바로 전단계를 의미한다.)
                                                         // 나중에 커널 오브젝트를 사용해 커널을 실행한다.
 
-    clCreateKernel(cl_program      /* program */,
-                   const char *    /* kernel_name */,
-                   cl_int *        /* errcode_ret */)
-    
+    // clCreateKernel(cl_program      /* program */,
+    //                const char *    /* kernel_name */,
+    //                cl_int *        /* errcode_ret */)  
+
     CHECK_ERROR(err);
 
-    clReleaseKernel(kernel);
-    clReleaseProgram(program);
-    clReleaseCommandQueue(queue);
-    clReleaseContext(context);
+    clReleaseKernel(kernel); // Referecne Count 와 관련있다. 객체가 몇 군데서 참조되었는지 나타내 준다. (객체)
+    clReleaseProgram(program);  // Reference COunt가 0이 되면 알아서 해당 객체가 저장된 메모리가 해제된다. 매우 중요하다
+    clReleaseCommandQueue(queue);   // 객체를 사용하느 중에는 reference count를 0보다 크게 유지해야한다.
+    clReleaseContext(context);  // kernel , program(객체들의 집합) , queue(command-queue), context(각 디바이스들에서 사용할 수 있는 queue, buffer 할당) 이 모든게 객체이다.
 
 
     printf("Finished!\n");
