@@ -49,14 +49,14 @@ int main(int argc, char *argv[]) {
   printf("C[%d X %d] = A[%d X %d] X B[%d X %d]\n",
          ROW_A, COL_B, ROW_A, COL_A, COL_A, COL_B);
 
-  if (option == 0) {
+  if (option == 0) {                     // Sequential 하게 쓰겠다.
     printf("Sequential version...\n");
     double start_time = get_time();
     mat_mul_seq(A, B, C, ROW_A, COL_A, COL_B);
     double end_time = get_time();
     printf("Elapsed time: %f sec\n", end_time - start_time);
 
-  } else if (option == 1) {
+  } else if (option == 1) {             // OpenCL을 쓰겠다.
     printf("OpenCL version...\n");
     double start_time = get_time();
     mat_mul_opencl(A, B, C, ROW_A, COL_A, COL_B);
