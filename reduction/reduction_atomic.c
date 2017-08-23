@@ -49,7 +49,7 @@ double reduction_seq(int *array, int N) { //순차적으로 합을 구한다.
   return (double)sum / N;
 }
 
-#define CHECK_ERROR(err) \   //에러를 체크하는 함수  
+#define CHECK_ERROR(err) \
   if (err != CL_SUCCESS) { \
     printf("[%s:%d] OpenCL error %d\n", __FILE__, __LINE__, err); \
     exit(EXIT_FAILURE); \
@@ -141,7 +141,7 @@ double reduction_opencl(int *array, int N) {
 
     size_t global_size = N;
     size_t local_size = 64;
-    size_t num_work_groups = global_size / local_size; // local_size를 통해 워크-그룹의 개수를 구할 수있다.
+    // size_t num_work_groups = global_size / local_size; // local_size를 통해 워크-그룹의 개수를 구할 수있다.
 
     cl_mem buf_array, buf_sum;  // 아무 데이터 타입을 가질수 있는거 같다.
 
