@@ -1,0 +1,5 @@
+Matrix Multiplication
+C[1000 X 1000] = A[1000 X 1000] X B[1000 X 1000]
+Sequential version...
+Elapsed time: 6.976386 sec
+Verification success!
