@@ -6,7 +6,7 @@
 
 static int N = 16777216;
 
-double get_time() {
+double get_time() { //  시간 구하는 함수
   struct timeval tv;
   gettimeofday(&tv, NULL);
   return (double)tv.tv_sec + (double)1e-6 * tv.tv_usec;
@@ -36,7 +36,7 @@ int main() {
   return 0;
 }
 
-double reduction_seq(int *array, int N) {
+double reduction_seq(int *array, int N) { //순차적으로 합을 구한다.
   int sum = 0;
   int i;
   double start_time, end_time;
@@ -49,7 +49,7 @@ double reduction_seq(int *array, int N) {
   return (double)sum / N;
 }
 
-#define CHECK_ERROR(err) \
+#define CHECK_ERROR(err) \   //에러를 체크하는 함수  
   if (err != CL_SUCCESS) { \
     printf("[%s:%d] OpenCL error %d\n", __FILE__, __LINE__, err); \
     exit(EXIT_FAILURE); \
@@ -136,41 +136,45 @@ double reduction_opencl(int *array, int N) {
     }
     CHECK_ERROR(err);
 
-    kernel= clCreateKernel(program, "reduction", &err);
+    kernel= clCreateKernel(program, "reduction", &err);  // reduction이라는 커널 오브젝트 만든다.
     CHECK_ERROR(err);
 
     size_t global_size = N;
     size_t local_size = 64;
-    size_t num_work_groups = global_size / local_size;
+    size_t num_work_groups = global_size / local_size; // local_size를 통해 워크-그룹의 개수를 구할 수있다.
 
     cl_mem buf_array, buf_sum;  // 아무 데이터 타입을 가질수 있는거 같다.
+
     buf_array=clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(int)*N, NULL, &err); // 여기서 cl_mem의 size가 나온다 sizeof(int)*N
+    
     CHECK_ERROR(err);
 
     buf_sum=clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(int), NULL, &err); //cl_mem도 사이즈도 나온다 sizeof(int)*num_work_groups
+
     CHECK_ERROR(err);
 
-    err = clEnqueueWriteBuffer(queue, buf_array, CL_TRUE, 0, sizeof(int)*N, array, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(queue, buf_array, CL_TRUE, 0, sizeof(int)*N, array, 0, NULL, NULL); // N개의 배열인 데이터를 buf_array에 써준다. atomic 연산이니까 CL_TRUE로 해준다.
+
     CHECK_ERROR(err);
 
     double start_time, end_time;
     start_time = get_time();
 
-    int sum = 0;
-    err = clEnqueueWriteBuffer(queue, buf_sum, CL_FALSE, 0, sizeof(int), &sum, 0, NULL, NULL);
+    int sum = 0;  // sum은 0으로 초기화되어있다.
+    err = clEnqueueWriteBuffer(queue, buf_sum, CL_FALSE, 0, sizeof(int), &sum, 0, NULL, NULL); // sum 이라는 데이터를 buf_sum에 또 다시 써준다.. 이렇게 buf_sum을 0으로 초기화 된다.
 
     CHECK_ERROR(err);
 
-    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &buf_array);
+    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &buf_array); // N개의 배열
     CHECK_ERROR(err);
-    err = clSetKernelArg(kernel, 1, sizeof(cl_mem), &buf_sum);
+    err = clSetKernelArg(kernel, 1, sizeof(cl_mem), &buf_sum); // 합  buf_sum이랑 관련있다.
     CHECK_ERROR(err);
-    err = clSetKernelArg(kernel, 2, sizeof(int)*local_size, NULL);
+    err = clSetKernelArg(kernel, 2, sizeof(int)*local_size, NULL); // local_memory를 선언해줬다. 위에서 말한 것처럼 local_size만큼의 크기를 가지고있다.
     CHECK_ERROR(err);
     err = clSetKernelArg(kernel, 3, sizeof(int), &N);
     CHECK_ERROR(err);
 
-    err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL);
+    err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL); //1차원 인덱스 공간의다. 
     CHECK_ERROR(err);
 
     // int *partial_sum = (int*)malloc(sizeof(int*)*num_work_groups); // 이건 참고로 디바이스에서 만든 데이터이다.
@@ -183,7 +187,7 @@ double reduction_opencl(int *array, int N) {
     //   sum += partial_sum[i];
     // }
 
-    err = clEnqueueReadBuffer(queue, buf_sum, CL_TRUE, 0, sizeof(int), &sum, 0, NULL, NULL);
+    err = clEnqueueReadBuffer(queue, buf_sum, CL_TRUE, 0, sizeof(int), &sum, 0, NULL, NULL); // buf_sum을 sum으로 다시 읽어준다. device -> host // 기다려야한다 Command가 끝날때까
     CHECK_ERROR(err);
 
     end_time = get_time();

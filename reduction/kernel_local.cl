@@ -5,7 +5,7 @@ __kernel void reduction(__global int *g_num,
   int i = get_global_id(0);
   int l_i = get_local_id(0);
 
-  l_sum[l_i] = (i < TotalNum) ? g_num[i] : 0;
+  l_sum[l_i] = (i < TotalNum) ? g_num[i] : 0;  // sum을 초기화 해주는 .
   barrier(CLK_LOCAL_MEM_FENCE);
 
   for (int p = get_local_size(0) / 2; p >= 1; p = p >> 1) {

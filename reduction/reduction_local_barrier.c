@@ -150,7 +150,7 @@ double reduction_opencl(int *array, int N) {
     buf_partial_sum=clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(int)*num_work_groups, NULL, &err); //cl_mem도 사이즈도 나온다 sizeof(int)*num_work_groups
     CHECK_ERROR(err);
 
-    err = clEnqueueWRiteBuffer(queue, buf_array, CL_TRUE, 0, sizeof(int)*N, array, 0, NULL, NULL);
+    err = clEnqueueWriteBuffer(queue, buf_array, CL_TRUE, 0, sizeof(int)*N, array, 0, NULL, NULL);
     CHECK_ERROR(err);
 
     double start_time, end_time;
