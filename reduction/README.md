@@ -1,3 +1,5 @@
+#### [이론](https://github.com/mjaysonnn/Accelerator/wiki/%EB%A1%9C%EC%BB%AC-%EB%A9%94%EB%AA%A8%EB%A6%AC%EC%99%80-%EC%9B%8C%ED%81%AC-%EA%B7%B8%EB%A3%B9%EA%B0%84%EC%9D%98-%EB%8F%99%EA%B8%B0%ED%99%94)
+
 #### 16,777,216개 정수들의 평균을 구하는 프로그램 작성하기 실습
 
 #### 파일 설명
