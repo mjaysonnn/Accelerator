@@ -123,7 +123,7 @@ void mat_mul(float *A, float *B, float *C,
 
   printf("%u devices\n", num_devices);
 
-  device = (cl_device_id*)malloc(sizeof(cl_device_id) * num_devices);  //배열 
+  device = (cl_device_id*)malloc(sizeof(cl_device_id) * num_devices);  //배열
   queue = (cl_command_queue*)malloc(sizeof(cl_command_queue) * num_devices); //배열
   kernel = (cl_kernel*)malloc(sizeof(cl_kernel) * num_devices); //배열
 
@@ -174,14 +174,14 @@ void mat_mul(float *A, float *B, float *C,
 
   cl_mem *bufA, *bufB, *bufC;
   bufA = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // A는 만들어서 나누는거 같다. 4배로 해놔야한다.
-  bufB = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // B는 그대로 간다.     
+  bufB = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // B는 그대로 간다.
   bufC = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // C도 4개로 나눈다.
 
   for (i = 0; i < num_devices; i++) {         //각각 디바이스별로 bufA, bufB, bufC를 보내준다.
     bufA[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float)*ROW_A_PER_DEVICE*COL_A,  //ROW_A과 아니라 ROW_A_PER_DEVICE이다.
                              NULL, &err);
     CHECK_ERROR(err);
-    bufB[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float)*COL_A*COL_B,  // 그대로 
+    bufB[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float)*COL_A*COL_B,  // 그대로
                              NULL, &err);
     CHECK_ERROR(err);
     bufC[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(float)*ROW_A_PER_DEVICE*COL_B,  //ROW_A_PER_DEVICE
@@ -191,7 +191,7 @@ void mat_mul(float *A, float *B, float *C,
 
   for (i = 0; i < num_devices; i++) {         //디바이스별로 메인 메모리의 A행렬의 1/4 , B를 디바이스별로 bufA, bufB에 써준다.
     err = clEnqueueWriteBuffer(queue[i], bufA[i], CL_FALSE, 0,
-                               sizeof(float)*ROW_A_PER_DEVICE*COL_A, A + (ROW_A_PER_DEVICE*COL_A*i),   //2차원 배열을 1차원 배열로 표현한 것 -
+                               sizeof(float)*ROW_A_PER_DEVICE*COL_A, A + (ROW_A_PER_DEVICE*COL_A*i),   // A행렬 전체가 들어가지만 결국 A행렬 윗부분 4분의 1만 들어간다
                                0, NULL, NULL);
     CHECK_ERROR(err);
     err = clEnqueueWriteBuffer(queue[i], bufB[i], CL_FALSE, 0,
@@ -200,7 +200,7 @@ void mat_mul(float *A, float *B, float *C,
     CHECK_ERROR(err);
   }
 
-  for (i = 0; i < num_devices; i++) {   //디바이스별로 커널인자를 만들어준다. 확실히 커널은 디바이스별로 존재 Command Queue와 함    
+  for (i = 0; i < num_devices; i++) {   //디바이스별로 커널인자를 만들어준다. 확실히 커널은 디바이스별로 존재 Command Queue와 함
     err = clSetKernelArg(kernel[i], 0, sizeof(cl_mem), &bufA[i]);
     CHECK_ERROR(err);
     err = clSetKernelArg(kernel[i], 1, sizeof(cl_mem), &bufB[i]);
@@ -226,9 +226,9 @@ void mat_mul(float *A, float *B, float *C,
     CHECK_ERROR(err);
   }
 
-  for (i = 0; i < num_devices; i++) {   //연산이 끝나고 bufC[i]결과값을 메인 메모리의 C배열로 읽어온다. 
+  for (i = 0; i < num_devices; i++) {   //연산이 끝나고 bufC[i]결과값을 메인 메모리의 C배열로 읽어온다.
     err = clEnqueueReadBuffer(queue[i], bufC[i], CL_FALSE, 0,
-                              sizeof(float)*ROW_A_PER_DEVICE*COL_B, C + (ROW_A_PER_DEVICE*COL_A*i),
+                              sizeof(float)*ROW_A_PER_DEVICE*COL_B, C + (ROW_A_PER_DEVICE*COL_A*i), //C행렬 중 부분만 잘려서 간다고 생각하면 이해하기 쉽다.
                               0, NULL, NULL);
     CHECK_ERROR(err);
   }
@@ -240,7 +240,7 @@ void mat_mul(float *A, float *B, float *C,
   double end_time = get_time();
   printf("Elapsed time: %f sec\n", end_time - start_time);
 
-  for (i = 0; i < num_devices; i++) {     // 버퍼 오브젝트 디바이스별로 삭제 
+  for (i = 0; i < num_devices; i++) {     // 버퍼 오브젝트 디바이스별로 삭제
     clReleaseMemObject(bufA[i]);
     clReleaseMemObject(bufB[i]);
     clReleaseMemObject(bufC[i]);
@@ -249,14 +249,14 @@ void mat_mul(float *A, float *B, float *C,
   free(bufB);
   free(bufC);
   for (i = 0; i < num_devices; i++) {
-    clReleaseKernel(kernel[i]);  //디바이스별로 커널 오브젝트 삭제  
+    clReleaseKernel(kernel[i]);  //디바이스별로 커널 오브젝트 삭제
   }
   free(kernel);
   clReleaseProgram(program);  //프로그램은 하나라서 삭제
   for (i = 0; i < num_devices; i++) {
     clReleaseCommandQueue(queue[i]);
   }
-  free(queue);  
-  clReleaseContext(context); //context device에 있으니 메모리 할당 제거  
+  free(queue);
+  clReleaseContext(context); //context device에 있으니 메모리 할당 제거
   free(device); //평소 device의 4배로 받아서 삭제한다.
 }
