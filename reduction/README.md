@@ -10,3 +10,4 @@
 > local_barrier.stderr,stdout	- local_memory barrier 사용할때 보여주는 프로그램<br />
 > reduction_atomic.c	- 호스트 프로그램 (atomic)<br />
 > reduction_local_atomic.c - 호스트 프로그램(local-memory, barrier)<br />
+[결과값](https://www.evernote.com/l/AuGjiHLMJKVH37dcbeMPlI1S4rXd4WJsLS8)
