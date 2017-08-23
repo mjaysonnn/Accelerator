@@ -165,7 +165,7 @@ double reduction_opencl(int *array, int N) {
 
     CHECK_ERROR(err);
 
-    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &buf_array); // N개의 배열
+    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &buf_array); // N개의 배열  , cl_float A =0.5 라도 &A로 받는다.  
     CHECK_ERROR(err);
     err = clSetKernelArg(kernel, 1, sizeof(cl_mem), &buf_sum); // 합  buf_sum이랑 관련있다.
     CHECK_ERROR(err);
