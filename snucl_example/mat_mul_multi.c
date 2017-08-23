@@ -123,14 +123,14 @@ void mat_mul(float *A, float *B, float *C,
 
   printf("%u devices\n", num_devices);
 
-  device = (cl_device_id*)malloc(sizeof(cl_device_id) * num_devices);
-  queue = (cl_command_queue*)malloc(sizeof(cl_command_queue) * num_devices);
-  kernel = (cl_kernel*)malloc(sizeof(cl_kernel) * num_devices);
+  device = (cl_device_id*)malloc(sizeof(cl_device_id) * num_devices);  //배열 
+  queue = (cl_command_queue*)malloc(sizeof(cl_command_queue) * num_devices); //배열
+  kernel = (cl_kernel*)malloc(sizeof(cl_kernel) * num_devices); //배열
 
   err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, num_devices, device, NULL);  //  GPU 디바이스 ID 4개 얻어오기
   CHECK_ERROR(err);
 
-  context = clCreateContext(NULL, num_devices, device, NULL, NULL, &err);  // 디바이스 4개를 사용하는 Context 만들기 , Context는 1개만 있어도 된다. 해당 컨텍스트 안에서 사용할 디바이스를 지정한다.
+  context = clCreateContext(NULL, num_devices, device, NULL, NULL, &err);  // 디바이스 4개를 사용하는 Context 만들기 , Context는 1개만 있어도 된다. 해당 컨텍스트 안에서 사용할 디바이스를 지정하면 된다.
   CHECK_ERROR(err);
 
   for (i = 0; i < num_devices; i++) {
@@ -173,25 +173,25 @@ void mat_mul(float *A, float *B, float *C,
   int ROW_A_PER_DEVICE = ROW_A / num_devices; // A를 4래로 쪼갠다.
 
   cl_mem *bufA, *bufB, *bufC;
-  bufA = (cl_mem*)malloc(sizeof(cl_mem) * num_devices);
-  bufB = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // 일단 크게 만드는 거 같다.      
-  bufC = (cl_mem*)malloc(sizeof(cl_mem) * num_devices);
+  bufA = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // A는 만들어서 나누는거 같다. 4배로 해놔야한다.
+  bufB = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // B는 그대로 간다.     
+  bufC = (cl_mem*)malloc(sizeof(cl_mem) * num_devices); // C도 4개로 나눈다.
 
   for (i = 0; i < num_devices; i++) {         //각각 디바이스별로 bufA, bufB, bufC를 보내준다.
-    bufA[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float)*ROW_A_PER_DEVICE*COL_A,
+    bufA[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float)*ROW_A_PER_DEVICE*COL_A,  //ROW_A과 아니라 ROW_A_PER_DEVICE이다.
                              NULL, &err);
     CHECK_ERROR(err);
-    bufB[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float)*COL_A*COL_B,
+    bufB[i] = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float)*COL_A*COL_B,  // 그대로 
                              NULL, &err);
     CHECK_ERROR(err);
-    bufC[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(float)*ROW_A_PER_DEVICE*COL_B,
+    bufC[i] = clCreateBuffer(context, CL_MEM_READ_WRITE, sizeof(float)*ROW_A_PER_DEVICE*COL_B,  //ROW_A_PER_DEVICE
                              NULL, &err);
     CHECK_ERROR(err);
   }
 
-  for (i = 0; i < num_devices; i++) {         //디바이스별로 A행렬/4 , B를 bufA, bufB에 써준다.
+  for (i = 0; i < num_devices; i++) {         //디바이스별로 메인 메모리의 A행렬의 1/4 , B를 디바이스별로 bufA, bufB에 써준다.
     err = clEnqueueWriteBuffer(queue[i], bufA[i], CL_FALSE, 0,
-                               sizeof(float)*ROW_A_PER_DEVICE*COL_A, A + (ROW_A_PER_DEVICE*COL_A*i),
+                               sizeof(float)*ROW_A_PER_DEVICE*COL_A, A + (ROW_A_PER_DEVICE*COL_A*i),   //2차원 배열을 1차원 배열로 표현한 것 -
                                0, NULL, NULL);
     CHECK_ERROR(err);
     err = clEnqueueWriteBuffer(queue[i], bufB[i], CL_FALSE, 0,
@@ -226,7 +226,7 @@ void mat_mul(float *A, float *B, float *C,
     CHECK_ERROR(err);
   }
 
-  for (i = 0; i < num_devices; i++) {   //연산이 끝나고 bufC[i]결과값을 메인 메모리의 C배열로 읽어와 출력한다. 
+  for (i = 0; i < num_devices; i++) {   //연산이 끝나고 bufC[i]결과값을 메인 메모리의 C배열로 읽어온다. 
     err = clEnqueueReadBuffer(queue[i], bufC[i], CL_FALSE, 0,
                               sizeof(float)*ROW_A_PER_DEVICE*COL_B, C + (ROW_A_PER_DEVICE*COL_A*i),
                               0, NULL, NULL);
