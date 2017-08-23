@@ -15,3 +15,6 @@
 - 프로그램 빌드
 - 커널 오브젝트를 만든다. -> 만든 커널의 함수 이름은 my_kernel
 - 지금까지 만들었던 모든 객체를 release -> 커널 오브젝트, 프로그램 오브젝트, 커맨드-큐, 컨텍스트
+
+
+[스크린샷](https://www.evernote.com/l/AuH_9CSGZXVOnpun1ult5aiNJFWFYMZvrVc)

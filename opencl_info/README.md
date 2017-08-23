@@ -14,8 +14,8 @@
 
 #### 결과값 확인 법
   - thorq --stat 720659 (Queue Number이 주어진다)
-
-
+  
+[스샷](https://www.evernote.com/l/AuGYTOBhdfhH64jU0dfuFwS93nWgrWrbIrE)
 
 
 
