@@ -10,3 +10,5 @@
 2.  simple_host_program
 
 3.  vector_add
+
+4.  mat_mul
