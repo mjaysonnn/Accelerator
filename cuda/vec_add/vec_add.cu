@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <sys/time.h>
 __global__ void gpuVecAdd(float *A, float *B, float *C) {   //device용이라는 __global__ 로 알수있다.
   // TODO: write kernel code here
   int tid = blockIdx.x * blockDim.x + threadIdx.x;
   C[tid]=A[tid]+B[tid];
+}
+
+double get_time() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return (double)tv.tv_sec + (double)1e-6 * tv.tv_usec;
 }
 
 void init(float *V, int N) {
@@ -37,6 +43,8 @@ int main() {
   // Memory objects of the device
   float *d_A, *d_B, *d_C;
 
+
+
   // TODO: allocate memory objects d_A, d_B, and d_C.
   cudaMalloc(&d_A, sizeof(float)*N);
   cudaMalloc(&d_C, sizeof(float)*N);
@@ -48,9 +56,13 @@ int main() {
   // TODO: launch the kernel.
   dim3 dimBlock(32,1); // 스레드 블록의 크기를 지정
   dim3 dimGrid(N/32,1); //grid의 크기를 지정 , global_size랑 다름 총 몇개의 thread_block이 있냐
+  double start_time = get_time();
+
   gpuVecAdd <<< dimGrid, dimBlock >>> (d_A, d_B, d_C);  //Background에서 돈다
   // TODO: copy "d_C" to "C" (device to host).
   cudaMemcpy(C, d_C, sizeof(float)*N, cudaMemcpyDeviceToHost); // MemCopy 끝난게 Kernel이 끝나다는 뜻이다.
+  double end_time = get_time();
+  printf("Elapsed time: %f sec\n", end_time - start_time);
   verify(A, B, C, N);
 
   // TODO: release d_A, d_B, and d_C.
