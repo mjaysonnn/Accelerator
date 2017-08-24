@@ -4,14 +4,14 @@
 __global__ void gpuMatMul(float * A, float * B, float *C,
                           int ROW_A, int COL_A, int COL_B) {
   /******************** TODO *********************/
-  int j = blockIdx.x * blockDim.x + threadIdx.x;
+  int j = blockIdx.x * blockDim.x + threadIdx.x;  //Block Thread의 Index에 Block Thread Size를 곱해서 Thread의 인덱스를 더한다.
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int k;
   float sum = 0.0f;
 
   if( i < ROW_A && j <COL_B){
     for (k=0; k<COL_A; k++){
-      sum += A[i*COL_A +k] * B[k*COLB + j];
+      sum += A[i*COL_A +k] * B[k*COLB + j];  //동시에 실행
     }
     C[i*COL_B +j] = sum;
   }
