@@ -4,11 +4,11 @@ __kernel void img_rotate(__global float * dest_data,
 			                   float sinTheta, float cosTheta)
 {
   int dest_x = get_global_id(0); // global size의 첫번째 값
-  int dest_y = get_global_id(1); // 출력 이미지는 데이터 디펜던스가 없음 
+  int dest_y = get_global_id(1); // 출력 이미지는 데이터 디펜던스가 없음
   if (dest_x >= W || dest_y >= H) return;
-  float x0 = W / 2.0f;  좌표로 보면 점의 한 가운데 x축
-  float y0 = H / 2.0f;  좌표로 보면 점의 한 가운데 y축
-  float xOff = dest_x - x0; (x2,y2)는 (x0, y0)를 기준으로 (x1,y1)를 theta 만큼 회전함 점
+  float x0 = W / 2.0f;  //좌표로 보면 점의 한 가운데 x축
+  float y0 = H / 2.0f;  //좌표로 보면 점의 한 가운데 y축
+  float xOff = dest_x - x0;                                //(x2,y2)는 (x0, y0)를 기준으로 (x1,y1)를 theta 만큼 회전함 점
   float yOff = dest_y - y0;
   int src_x = (int)(xOff*cosTheta + yOff*sinTheta + x0);  // (src_x,srx_y)는 (x0, y0)를 기준으로 (xOff,yOff)를 theta 만큼 움직인 점
   int src_y = (int)(yOff*cosTheta + xOff*sinTheta + y0);
