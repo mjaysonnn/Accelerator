@@ -17,7 +17,7 @@ cl_platform_id *platforms; // platforms id
 
 cl_uint num_devices; // number of device
 
-cl_device_id *deivces; // id of devices
+cl_device_id *devices; // id of devices
 
 char str[1024]; //strings to use
 
@@ -235,11 +235,11 @@ for(p =0; p < num_platforms; p++) { // platform 개수만큼
     CHECK_ERROR(err);
 
     printf("- CL_DEVICE_TYPE             :");
-    if (deivce_type & CL_DEVICE_TYPE_CPU) printf(" CL_DEVICE_TYPE_CPU");  //각각 맞는 Type에 맞게 출력해준다.
-    if (deivce_type & CL_DEVICE_TYPE_GPU) printf(" CL_DEVICE_TYPE_GPU");
-    if (deivce_type & CL_DEVICE_TYPE_ACCELERATOR) printf(" CL_DEVICE_TYPE_ACCELERATOR");
-    if (deivce_type & CL_DEVICE_TYPE_DEFAULT) printf(" CL_DEVICE_TYPE_DEFAULT");
-    if (deivce_type & CL_DEVICE_TYPE_CUSTOM) printf(" CL_DEVICE_TYPE_CUSTOM");
+    if (device_type & CL_DEVICE_TYPE_CPU) printf(" CL_DEVICE_TYPE_CPU");  //각각 맞는 Type에 맞게 출력해준다.
+    if (device_type & CL_DEVICE_TYPE_GPU) printf(" CL_DEVICE_TYPE_GPU");
+    if (device_type & CL_DEVICE_TYPE_ACCELERATOR) printf(" CL_DEVICE_TYPE_ACCELERATOR");
+    if (device_type & CL_DEVICE_TYPE_DEFAULT) printf(" CL_DEVICE_TYPE_DEFAULT");
+    if (device_type & CL_DEVICE_TYPE_CUSTOM) printf(" CL_DEVICE_TYPE_CUSTOM");
     printf("\n");
     
     err = clGetDeivceInfo(devices[d], CL_DEVICE_NAME, 1024, str, NULL);  // 이건 Device Name을 출력해주는 함수

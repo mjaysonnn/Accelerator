@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <CL/cl.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #define CHECK_ERROR(err) \
   if (err != CL_SUCCESS) { \
@@ -29,6 +31,13 @@ char *get_source_code(const char *file_name, size_t *len) {
 
     *len = length;
     return source_code;
+}
+
+
+double get_time() {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  return (double)tv.tv_sec + (double)1e-6 * tv.tv_usec;
 }
 
 int main() {
@@ -97,9 +106,9 @@ int main() {
     //                const char *    /* kernel_name */,
     //                cl_int *        /* errcode_ret */)
 
-    int *A = (int) malloc(sizeof(int) * 16384);
-    int *B = (int) malloc(sizeof(int) * 16384);
-    int *C = (int) malloc(sizeof(int) * 16384);
+    int *A = (int*) malloc(sizeof(int) * 16384);
+    int *B = (int*) malloc(sizeof(int) * 16384);
+    int *C = (int*) malloc(sizeof(int) * 16384);
 
     for (i = 0; i < 16384; i++) { // 초기화
         A[i] = rand() % 100;
@@ -114,8 +123,7 @@ int main() {
     4. 커널 함수에서 그러면 일반적인 배열을 쓰듯이 값을 일고 쓴다.
     5. 마지막으로 버퍼 오브젝트는 메모리 전송 커맨드를 이용해 호스트 프로그램이 데이터를 읽게 한다.
     */
-    bufA = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(int) * 16384, NULL, &err); //버퍼 오브젝트 만든다. int값 16384개를 저장할 버퍼 오브젝트를 만든다.
-    CHECK_ERROR(err);
+    bufA = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(int) * 16384, NULL, &err);  CHECK_ERROR(err);
 
     // clCreateBuffer(cl_context   /* context */,
     //                cl_mem_flags /* flags */,     // 여러가지 flag를 줄 수있다. CL_MEM_READ_WRITE, MEM_READ_ONLY
@@ -123,34 +131,54 @@ int main() {
     //                void *       /* host_ptr */,
     //                cl_int *     /* errcode_ret */)
 
-    bufB = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(int) * 16384, NULL, &err);
-    CHECK_ERROR(err);
-    bufC = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(int) * 16384, NULL, &err);
-    CHECK_ERROR(err);
+    bufB = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(int) * 16384, NULL, &err); CHECK_ERROR(err);
+    
+    bufC = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(int) * 16384, NULL, &err); CHECK_ERROR(err);
 
-    err = clEnqueueWriteBuffer(queue, bufA, CL_FALSE, 0, sizeof(int) * 16384, A, 0, NULL, NULL);
-    CHECK_ERROR(err);
+    
 
-    err = clEnqueueWriteBuffer(queue, bufB, CL_FALSE, 0, sizeof(int) * 16384, B, 0, NULL, NULL);
-    CHECK_ERROR(err);
+    double start_time = get_time();
 
-    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &bufA);
-    CHECK_ERROR(err);
+    err = clEnqueueWriteBuffer(queue, bufA, CL_FALSE, 0, sizeof(int) * 16384, A, 0, NULL, NULL); CHECK_ERROR(err);
 
-    err = clSetKernelArg(kernel, 1, sizeof(cl_mem), &bufB);
-    CHECK_ERROR(err);
+    double end_time = get_time();
+    printf("buf A -> to Device: %f sec\n", end_time - start_time);
 
-    err = clSetKernelArg(kernel, 2, sizeof(cl_mem), &bufC);
-    CHECK_ERROR(err);
+    
+    double start_time = get_time();
+
+    err = clEnqueueWriteBuffer(queue, bufB, CL_FALSE, 0, sizeof(int) * 16384, B, 0, NULL, NULL); CHECK_ERROR(err);
+
+    double end_time = get_time();
+    printf("bufB -> Device: %f sec\n", end_time - start_time);
+
+    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &bufA); CHECK_ERROR(err);
+
+    err = clSetKernelArg(kernel, 1, sizeof(cl_mem), &bufB); CHECK_ERROR(err);
+
+    err = clSetKernelArg(kernel, 2, sizeof(cl_mem), &bufC); CHECK_ERROR(err);
 
     size_t global_size = 16384;
     size_t local_size = 256;
 
-    err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL);
-    CHECK_ERROR(err);
+    
+    double start_time = get_time();
+    err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size, &local_size, 0, NULL, NULL); CHECK_ERROR(err);
+    double end_time = get_time();
+    printf("Kernel Execution: %f sec\n", end_time - start_time);
+    
 
-    err = clEnqueueReadBuffer(queue, bufC, CL_TRUE, 0, sizeof(int) * 16384, C, 0, NULL, NULL);
-    CHECK_ERROR(err);
+    double start_time = get_time();
+    err = clEnqueueReadBuffer(queue, bufC, CL_TRUE, 0, sizeof(int) * 16384, C, 0, NULL, NULL); CHECK_ERROR(err);
+    double end_time = get_time();
+    printf("BUF C -> C: %f sec\n", end_time - start_time);
+
+    double start_time = get_time();
+    clFinish(queue);
+    double end_time = get_time();
+    printf("CL_FINISH: %f sec\n", end_time - start_time);
+
+    
 
     for (i = 0; i < 16384; i++) {
         if (A[i] + B[i] != C[i]) {
@@ -162,6 +190,8 @@ int main() {
     {
         printf("Verification success!\n");
     }
+
+
     clReleaseMemObject(bufA);
     clReleaseMemObject(bufB);
     clReleaseMemObject(bufC);
