@@ -29,3 +29,6 @@ __kernel void mat_mul(__global float *A, __global float *B, __global float *C, i
  C는 row로 채워진다. 그게 더 기억하기 쉬울 것이다.
 
 */
+
+// 어떤 커너 인스턴스에 대해서 
+C[i*COL_B + j ]  += A[i * COL_A + k]*B[k*COL_B +j];

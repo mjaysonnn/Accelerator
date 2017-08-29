@@ -4,6 +4,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+extern void dgemm_(char*, char*, int*, int*,int*, double*, double*, int*, double*, int*, double*, double*, int*);
+
 static int ROW_A = 1000;
 static int COL_A = 1000;
 static int COL_B = 1000;
