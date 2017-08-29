@@ -81,37 +81,37 @@ char *get_source_code(const char *file_name, size_t *len) {
 double reduction_opencl(int *array, int N) {
   cl_platform_id platform;
 
-    cl_device_id device;
+  cl_device_id device;
 
-    cl_context context;
+  cl_context context;
 
-    cl_command_queue queue;
+  cl_command_queue queue;
 
-    cl_program program;
+  cl_program program;
 
-    char *kernel_source;
+  char *kernel_source;
 
-    size_t kernel_source_size;
+  size_t kernel_source_size;
 
-    cl_kernel kernel;
+  cl_kernel kernel;
 
-    cl_int err;
+  cl_int err;
 
-    err = clGetPlatformIDs(1, &platform, NULL);
+  err = clGetPlatformIDs(1, &platform, NULL);
 
-    CHECK_ERROR(err);
+  CHECK_ERROR(err);
 
-    err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL);
-    CHECK_ERROR(err);
+  err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL);
+  CHECK_ERROR(err);
 
-    context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
-    CHECK_ERROR(err);
+  context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
+  CHECK_ERROR(err);
 
-    queue = clCreateCommandQueue(context, device, 0, &err);
-    CHECK_ERROR(err);
+  queue = clCreateCommandQueue(context, device, 0, &err);
+  CHECK_ERROR(err);
 
-    kernel_source = get_source_code("kernel_atomic.cl", &kernel_source_size);
-    program = clCreateProgramWithSource(context, 1, (const char **) &kernel_source, &kernel_source_size, &err);
+  kernel_source = get_source_code("kernel_atomic.cl", &kernel_source_size);
+  program = clCreateProgramWithSource(context, 1, (const char **) &kernel_source, &kernel_source_size, &err);
 
     CHECK_ERROR(err);
 

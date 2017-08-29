@@ -81,7 +81,7 @@ char *get_source_code(const char *file_name, size_t *len) {
 double reduction_opencl(int *array, int N) {
   cl_platform_id platform;
 
-    cl_device_id device;
+  cl_device_id device;
 
     cl_context context;
 
