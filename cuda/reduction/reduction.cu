@@ -7,40 +7,21 @@ __global__ void gpuReduction(int *g_num,
                              int *g_sum,
                              int TotalNum) {
 
+  __shared__ int l_sum[block_dim];
   int i =blockIdx.x * blockDim.x + threadIdx.x;
-  float sum = 0.0f;
-  
-  // TODO: implement kernel code here
-  // int j = blockIdx.x * blockDim.x + threadIdx.x;
-  // int i = blockIdx.y * blockDim.y + threadIdx.y;
-  // int k;
-  // float sum = 0.0f;
-  //
-  // if( i < ROW_A && j <COL_B){
-  //   for (k=0; k<COL_A; k++){
-  //     sum += A[i*COL_A +k] * B[k*COLB + j];
-  //   }
-  //   C[i*COL_B +j] = sum;
-  // }
-  // __kernel void reduction(__global int *g_num,
-  //                         __global int *g_sum,
-  //                         __local int *l_sum,
-  //                         int TotalNum) {
-  //   int i = get_global_id(0);
-  //   int l_i = get_local_id(0);
-  //
-  //   l_sum[l_i] = (i < TotalNum) ? g_num[i] : 0;  // 이건 뭔 개소리일까
-  //   barrier(CLK_LOCAL_MEM_FENCE);
-  //
-  //   for (int p = get_local_size(0) / 2; p >= 1; p = p >> 1) {
-  //     if (l_i < p) l_sum[l_i] += l_sum[l_i + p];
-  //     barrier(CLK_LOCAL_MEM_FENCE);
-  //   }
-  //
-  //   if (l_i == 0) {
-  //     g_sum[get_group_id(0)] = l_sum[0];
-  //   }
-  // }
+  int l_i = threadIdx.x;
+
+  l_sum[l_i]=(i < TotalNum) ? g_num[i] : 0;
+  __syncthreads();
+
+  for(int p = blockDim.x/2 ; p >= 1; p = p>>1){
+    if (l_i < p) l_sum[l_i] += l_sum[l_i + p];
+    __syncthreads();
+  }
+
+  if(l_i == 0){
+    g_sum[blockIdx.x] = l_sum[0];
+  }
 
 }
 

@@ -11,7 +11,7 @@ __global__ void gpuMatMul(float * A, float * B, float *C,
 
   if( i < ROW_A && j <COL_B){
     for (k=0; k<COL_A; k++){
-      sum += A[i*COL_A +k] * B[k*COLB + j];  //동시에 실행
+      sum += A[i*COL_A +k] * B[k*COL_B + j];  //동시에 실행
     }
     C[i*COL_B +j] = sum;
   }

@@ -49,13 +49,17 @@ int main() {
   cudaMalloc(&d_A, sizeof(float)*N);
   cudaMalloc(&d_C, sizeof(float)*N);
   cudaMalloc(&d_B, sizeof(float)*N);
+
+
   // TODO: copy "A" to "d_A" (host to device).
   cudaMemcpy(d_A, A, sizeof(float)*N, cudaMemcpyHostToDevice);
+
   // TODO: copy "B" to "d_B" (host to device).
   cudaMemcpy(d_B, B, sizeof(float)*N, cudaMemcpyHostToDevice);
   // TODO: launch the kernel.
   dim3 dimBlock(32,1); // 스레드 블록의 크기를 지정
   dim3 dimGrid(N/32,1); //grid의 크기를 지정 , global_size랑 다름 총 몇개의 thread_block이 있냐
+
   double start_time = get_time();
 
   gpuVecAdd <<< dimGrid, dimBlock >>> (d_A, d_B, d_C);  //Background에서 돈다
@@ -75,3 +79,8 @@ int main() {
 
   return 0;
 }
+
+/*
+Elapsed time: 0.000117 sec
+Verification success!
+*/
