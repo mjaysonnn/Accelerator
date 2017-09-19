@@ -64,6 +64,6 @@ int main(int argc, char* argv[])
 }
 
 /*
-gcc -o openblas time_dgemm.c -lopenblas
+gcc -o openblas mat_mul_openblas.c -lopenblas
 ./time_dgemm 10000 10000 10000
 */

@@ -6,6 +6,7 @@
 > mat_mul.c	 - 기본 행렬 연산 코드 뒤에 0을 붙이면 sequential code 1을 붙이면 OpenCl 코드 실행<br />
 > mat_mul_opencl.c	- C 기반의 호스트 프로그램 <br />
 > mat_mul_opencl_analysis.c	- C 기반의 호스트 프로그램<br />
+  mat_mul_opencl_openblas.c - OpenBLAS 활용
 > mat_mul_seq.c	- Seuquential Code<br />
 > sequential.stderr	 오류 값<br />
 > sequential.stdout  Sequential 으로 했을 때 나오는 결과값<br />

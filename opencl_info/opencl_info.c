@@ -11,7 +11,7 @@ if (err != CL_SUCCESS) { \
 
 int main() {
 	// TODO
-	cl_uint num_platforms; // 플랫폼 개수와 ID 얻어올때 쓰인다.
+	cl_uint num_platforms; // 플랫폼 개수와 얻어올때 쓰인다.
 
 	cl_platform_id *platforms; // platforms id
 
@@ -23,10 +23,10 @@ int main() {
 
 	cl_device_type device_type; //type of device
 
-	size_t max_work_group_size; //work group size
+	size_t max_work_group_size; //work group size의 max를 쓰기 위한
 
 	// class size_t
-	// { 
+	// {
 	// private:
 	//     ::size_t data_[N];
 
@@ -62,14 +62,14 @@ int main() {
 
 	cl_ulong max_mem_alloc_size; //maxmimum memory allocation size
 
-	cl_uint p, d; 
+	cl_uint p, d;
 
 	cl_uint err; //error to check if it's going right
 
 
 
 
-	err = clGetPlatformIDs(0, NULL, &num_platforms); // 플랫폼 개수를  확인할 수 있다.   
+	err = clGetPlatformIDs(0, NULL, &num_platforms); // 플랫폼 개수를  확인할 수 있다.
 
 	//
 	//clGetPlatformIDs(cl_uint          /* num_entries */
@@ -81,7 +81,7 @@ int main() {
 
 	platforms = (cl_platform_id*)malloc(sizeof(cl_platform_id) * num_platforms);  // cl_platform_id 는 자료구조이다. 자료구조 내부적으로 모두 포인터이다. 플롯팸 개수만큼 할당을 해준다.
 
-	err = clGetPlatformIDs(num_platforms, platforms, NULL);  // 플랫폼 ID를 num_platforms개 얻어오기 
+	err = clGetPlatformIDs(num_platforms, platforms, NULL);  // 플랫폼 ID를 num_platforms개 얻어오기
 
 
 	//
@@ -100,9 +100,9 @@ int main() {
 
 	err = clGetPlatformInfo(platforms[p], CL_PLATFORM_NAME, 1024, str, NULL); // 플랫폼 정보 얻어오기 저장은 str에 된다. 위에 str 정의해 놓음
 
-	//clGetPlatformInfo(cl_platform_id   /* platform */, 
+	//clGetPlatformInfo(cl_platform_id   /* platform */,
 	//                  cl_platform_info /* param_name */,    -> param_name에 어떤 정보를 얻을지를 지정해 줌 .  1. CL_PLATFORM_NAME 2. CL_PLATFORM_VENDOR 3.CL_PLATFORM_VERSION 4. CL_PLATFORM_PROFILE  5. CL_PLATFORM_EXTENSIon
-	//                  size_t           /* param_value_size */, 
+	//                  size_t           /* param_value_size */,
 	//                  void *           /* param_value */,
 	//                  size_t *         /* param_value_size_ret */)
 
@@ -119,9 +119,9 @@ int main() {
 
 	err = clGetPlatformInfo(platforms[p], CL_PLATFORM_VENDOR, 1024, str, NULL); // str에 저장되어있음
 
-	//clGetPlatformInfo(cl_platform_id   /* platform */, 
-	//                  cl_platform_info /* param_name */,   
-	//                  size_t           /* param_value_size */, 
+	//clGetPlatformInfo(cl_platform_id   /* platform */,
+	//                  cl_platform_info /* param_name */,
+	//                  size_t           /* param_value_size */,
 	//                  void *           /* param_value */,
 	//                  size_t *         /* param_value_size_ret */)
 
@@ -133,9 +133,9 @@ int main() {
 
 	// clGetDeviceIDs(cl_platform_id   /* platform */,
 	//                cl_device_type   /* device_type */,  device_type에 ID를 얻어올 디바이스의 종류를 지정해 줌
-	//                cl_uint          /* num_entries */, 
-	//                cl_device_id *   /* devices */, 
-	//                cl_uint *        /* num_devices */) 
+	//                cl_uint          /* num_entries */,
+	//                cl_device_id *   /* devices */,
+	//                cl_uint *        /* num_devices */)
 
 	// /* cl_device_type - bitfield */
 	// #define CL_DEVICE_TYPE_DEFAULT                      (1 << 0)
@@ -155,9 +155,9 @@ int main() {
 
 	// clGetDeviceIDs(cl_platform_id   /* platform */,
 	//                cl_device_type   /* device_type */,  device_type에 ID를 얻어올 디바이스의 종류를 지정해 줌
-	//                cl_uint          /* num_entries */, 
-	//                cl_device_id *   /* devices */, 
-	//                cl_uint *        /* num_devices */) 
+	//                cl_uint          /* num_entries */,
+	//                cl_device_id *   /* devices */,
+	//                cl_uint *        /* num_devices */)
 
 	// /* cl_device_type - bitfield */
 	// #define CL_DEVICE_TYPE_DEFAULT                      (1 << 0)
@@ -246,7 +246,7 @@ int main() {
 
 	CHECK_ERROR(err);
 
-	printf("- CL_DEVICE_NAME        : %s\n", str);  
+	printf("- CL_DEVICE_NAME        : %s\n", str);
 
 	err = clGetDeviceInfo(devices[d], CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_work_group_size, NULL); // 워크-그룹 하나의 워크-아이템 개수 제한 개수를 알아보는 것이다.
 
@@ -270,7 +270,7 @@ int main() {
 
 	CHECK_ERROR(err);
 
-	printf("- CL_DEVICE_LOCAL_MEM_SIZE  : %lu\n", local_mem_size);
+	printf("- CL_DEVICE_MAX_MEM_ALLOC_SIZE  : %lu\n", local_mem_size);
 }
 free(devices);
 }
